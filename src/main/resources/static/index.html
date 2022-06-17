@@ -5,8 +5,13 @@
   <title>단순 SSE</title>
 </head>
 <body>
-<h1>SSE TEST</h1>
+<h1>SSE TEST - Flux</h1>
 <div id="stockValue">
+</div>
+
+<h1>SSE TEST - SseEmitter</h1>
+<div id="emitterValue">
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
@@ -17,9 +22,10 @@
         source = new EventSource("http://localhost:8081/sse/locationCode?code=10");
         console.log("create EventSource");
         source.onmessage = function(ev) {
-            if (cnt == 9) {
+            if (cnt > 9) {
                 stop();
             }
+            console.log("cnt" + cnt)
             console.log("on message: ", ev.data);
             $("#stockValue").text(ev.data);
 
@@ -38,12 +44,49 @@
         }
     }
 
+    function getWords() {
+        var sse = new EventSource('http://localhost:8081/sse/words');
+
+        sse.onopen = function () {
+            console.log('words connection is established');
+        };
+
+        sse.onerror = function (error) {
+            console.log("ERROR")
+            console.log(error)
+            if (sse.readyState == 0) {
+                console.log('words connection is closed');
+            }else {
+                console.log('connection state: ' + sse.readyState + ', error: ' + error.type);
+            }
+            sse.close();
+        };
+
+        sse.onmessage = function (evt) {
+            console.log("words: " + evt.data)
+            $("#emitterValue").append(document.createTextNode(evt.data));
+            $("#emitterValue").append(document.createElement('br'));
+            if(evt.data.code == -1) {
+                console.log("CLOSE!!!")
+                sse.close()
+            }
+
+            // if(word.contain(".")) {
+            //     sse.close();
+            // }
+        };
+
+    }
+
     $(document).ready(function(){
+        getWords();
         start();
     });
     $(window).on("unload", function () {
         stop();
     });
+
+
 </script>
 </body>
 

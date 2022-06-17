@@ -1,2 +1,21 @@
 server:
   port: 8081
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/yanolja_clone
+    username: dayoung
+    password: 1234
+
+  jpa:
+    show-sql: true
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+      properties:
+        hibernate.format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
