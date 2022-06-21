@@ -72,6 +72,24 @@ public class SimpleSseController {
         return emitter;
     }
 
+    @GetMapping(path = "/count3", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SseEmitter count3() {
+        SseEmitter emitter = new SseEmitter();
+        cachedThreadPool.execute(() -> {
+            try {
+
+                for (int i = 0; i < 4; i++) {
+                    emitter.send(ResponseEntity.ok().body(i));
+                    TimeUnit.SECONDS.sleep(1);
+                }
+                emitter.complete();
+            } catch (Exception e) {
+                emitter.completeWithError(e);
+            }
+        });
+        return emitter;
+    }
+
     @GetMapping("/srb")
     public ResponseEntity<StreamingResponseBody> handleRbe() {
         StreamingResponseBody stream = out -> {
